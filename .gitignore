@@ -1,7 +1,9 @@
 
 .idea
 .vscode
+gopath
 
 .DS_Store
 
+IntersectBot/
 intersectBot

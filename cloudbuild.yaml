@@ -2,9 +2,9 @@ steps:
 
   # Checkout code
   - name: 'gcr.io/cloud-builders/git'
-    entrypoint: 'bash'
     args:
-      - clone git@github.com:gabrielpsilva/auther.git
+      - clone
+      - https://github.com/gabrielpsilva/IntersectBot.git
 
   # Building
   - name: 'gcr.io/cloud-builders/go:debian'
@@ -14,7 +14,6 @@ steps:
     args:
       - '-c'
       - |
-        set -e
         cd IntersectBot
         go build -v .
 
@@ -29,4 +28,5 @@ steps:
         -t gcr.io/axpress/github.com/gabrielpsilva/intersectbot:latest \
         -f IntersectBot/Dockerfile
 
-  images: ['gcr.io/axpress/github.com/gabrielpsilva/IntersectBot:latest']
+images: ['gcr.io/axpress/github.com/gabrielpsilva/intersectbot:latest']
+
