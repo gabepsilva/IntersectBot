@@ -6,6 +6,24 @@ steps:
       - clone
       - https://github.com/gabrielpsilva/IntersectBot.git
 
+  # Switch to the branch where code was committed
+  - name: 'gcr.io/cloud-builders/git'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        if [ ! -z "$BRANCH_NAME" ]
+        then
+          cd $REPO_NAME
+          git checkout $BRANCH_NAME
+        else
+          echo "no branch commit - is this a local build?"
+          #DEBUG DELETE 2 LINES
+          cd IntersectBot
+          git checkout gitactions
+        fi
+
+
   # Building
   - name: 'gcr.io/cloud-builders/go:debian'
     env:
@@ -23,10 +41,9 @@ steps:
     args:
       - '-c'
       - |
-        set -e
         docker build \
         -t gcr.io/axpress/github.com/gabrielpsilva/intersectbot:latest \
-        -f IntersectBot/Dockerfile
+        -f IntersectBot/Dockerfile .
 
 images: ['gcr.io/axpress/github.com/gabrielpsilva/intersectbot:latest']
 
