@@ -1,0 +1,17 @@
+steps:
+
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud compute ssh master1 \
+        --zone=us-central1-a \
+        -- "
+        set -e
+
+        docker service rm le-bot
+        docker service create --replicas 3 --name le-bot -p 80:8000 --network bot-net --with-registry-auth gcr.io/axpress/github.com/gabrielpsilva/intersectbot:latest
+        docker service ps le-bot
+
+        "

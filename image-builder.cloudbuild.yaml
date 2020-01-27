@@ -19,8 +19,8 @@ steps:
         else
           echo "no branch commit - is this a local build?"
           #DEBUG DELETE 2 LINES
-          cd IntersectBot
-          git checkout gitactions
+          #cd IntersectBot
+          #git checkout gitactions
         fi
 
 
