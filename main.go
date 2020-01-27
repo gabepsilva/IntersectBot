@@ -2,24 +2,33 @@ package main
 
 import (
 	"fmt"
-	owm "github.com/briandowns/openweathermap"
 	"github.com/gin-gonic/gin"
+	"intersectBot/appDB"
+	"intersectBot/weather"
 	"log"
 	"os"
 )
 
 // TODO: Secret management
-// TODO: Organize if code >= too big AND TimeLeft() > 2h
+// TODO: getWeatherStatus
 
 func main(){
 
+	// initialize database
+	connectionUrl := os.Getenv("DB_URL")
+	appDB.Connect(connectionUrl)
+	appDB.MySQL.Init()
 
+	// initialize weather api
+	weather.OWM_API_KEY = os.Getenv("OWM_API_KEY")
+
+	// initialize web server
 	router := gin.New()
 
-	// Simple group: v1
 	v1 := router.Group("/v1")
 	{
-		v1.POST("/hi", commandHi)
+		v1.POST("/weather", getWeather)
+		//v1.POST("/weather-status", getWeatherStatus)
 	}
 
 	err := router.Run("0.0.0.0:8000")
@@ -29,7 +38,7 @@ func main(){
 
 }
 
-func commandHi(c *gin.Context){
+func getWeather(c *gin.Context){
 
 	// get bot data
 	err := c.Request.ParseForm()
@@ -42,23 +51,16 @@ func commandHi(c *gin.Context){
 	if len(city) <= 0 {
 		city = "Toronto,CA"
 	}
-	c.String(200, getWeather(city))
 
-}
-
-func getWeather(city string) string{
-	// initialize API
-	var apiKey = os.Getenv("OWM_API_KEY")
-	w, err := owm.NewCurrent("C", "EN", apiKey) // (internal - OpenWeatherMap reference for kelvin) with English output
-	if err != nil {
-		return fmt.Sprintf("sorry, I crashed: %v", err)
+	botReturn := "Nope, this city does not exist or maybe I am broke. Ask admin to check my logs"
+	w := weather.GetByCity(city)
+	if w == nil {
+		c.String(200, botReturn)
+		return
 	}
 
-	// forecast search
-	err = w.CurrentByName(city)
-	if err != nil {
-		return fmt.Sprintf("sorry, I crashed: %v", err)
-	}
-
-	return fmt.Sprintf("%.2f°C %s\nMin:%.2f\nMax:%.2f", w.Main.Temp, w.Weather[0].Main, w.Main.TempMin, w.Main.TempMax)
+	botReturn = fmt.Sprintf("%.2f°C in %s\n Min:%.2f\nMax:%.2f\n%s", w.Temp,w.City, w.Min, w.Max, w.Main)
+	c.String(200, botReturn)
+	query := fmt.Sprintf("INSERT INTO weather (city, weather, temperature) VALUES ('%s', '%s', %.2f)", w.City, w.Main, w.Temp)
+	appDB.MySQL.Exec(query)
 }
