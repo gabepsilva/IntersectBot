@@ -9,9 +9,6 @@ import (
 	"os"
 )
 
-// TODO: Secret management
-// TODO: getWeatherStatus
-
 func main(){
 
 	// initialize database
@@ -28,7 +25,7 @@ func main(){
 	v1 := router.Group("/v1")
 	{
 		v1.POST("/weather", getWeather)
-		//v1.POST("/weather-status", getWeatherStatus)
+		v1.POST("/weather-status", getWeatherStatus)
 	}
 
 	err := router.Run("0.0.0.0:8000")
@@ -63,4 +60,31 @@ func getWeather(c *gin.Context){
 	c.String(200, botReturn)
 	query := fmt.Sprintf("INSERT INTO weather (city, weather, temperature) VALUES ('%s', '%s', %.2f)", w.City, w.Main, w.Temp)
 	appDB.MySQL.Exec(query)
+}
+
+func getWeatherStatus(c *gin.Context) {
+
+	var totalRows int
+	res := appDB.MySQL.Query("SELECT COUNT(*) FROM weather")
+	for res.Next() {
+		err := res.Scan(&totalRows)
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+
+	var botReturn string
+	var weatherStatus string
+	var weatherCount int
+
+	res = appDB.MySQL.Query("SELECT weather, COUNT(*) FROM weather GROUP BY weather")
+	for res.Next() {
+		err := res.Scan(&weatherStatus, &weatherCount)
+		if err != nil {
+			panic(err.Error())
+		}
+		botReturn += fmt.Sprintf("%s - %d/%d records (%d%%)\n", weatherStatus, weatherCount, totalRows, (weatherCount * 100 / totalRows))
+	}
+
+	c.String(200, botReturn)
 }
