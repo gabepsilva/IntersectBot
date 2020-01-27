@@ -1,11 +1,15 @@
 package main
 
 import (
+	"fmt"
+	owm "github.com/briandowns/openweathermap"
 	"github.com/gin-gonic/gin"
 	"log"
+	"os"
 )
 
-
+// TODO: Secret management
+// TODO: Organize if code >= too big AND TimeLeft() > 2h
 
 func main(){
 
@@ -27,18 +31,34 @@ func main(){
 
 func commandHi(c *gin.Context){
 
-	greetings := []string{
-		"Enjoy your special day.",
-		"The day is all yours - have fun!",
-	}
-
-
+	// get bot data
 	err := c.Request.ParseForm()
 	if err != nil {
-		log.Printf("invalid request from server: %v", err)
+		c.String(200, fmt.Sprintf("sorry, I crashed: %v", err))
+		return
 	}
 
-	log.Println(c.Request.FormValue("text"))
-	c.String(200, "%s", greetings[1])
+	city := c.Request.FormValue("text")
+	if len(city) <= 0 {
+		city = "Toronto,CA"
+	}
+	c.String(200, getWeather(city))
 
+}
+
+func getWeather(city string) string{
+	// initialize API
+	var apiKey = os.Getenv("OWM_API_KEY")
+	w, err := owm.NewCurrent("C", "EN", apiKey) // (internal - OpenWeatherMap reference for kelvin) with English output
+	if err != nil {
+		return fmt.Sprintf("sorry, I crashed: %v", err)
+	}
+
+	// forecast search
+	err = w.CurrentByName(city)
+	if err != nil {
+		return fmt.Sprintf("sorry, I crashed: %v", err)
+	}
+
+	return fmt.Sprintf("%.2f°C %s\nMin:%.2f\nMax:%.2f", w.Main.Temp, w.Weather[0].Main, w.Main.TempMin, w.Main.TempMax)
 }
