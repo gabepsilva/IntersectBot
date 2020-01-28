@@ -12,7 +12,7 @@ steps:
         docker-credential-gcr configure-docker
         docker pull gcr.io/axpress/github.com/gabrielpsilva/intersectbot
         docker service rm le-bot
-        docker service create --replicas 3 --name le-bot -p 80:8000 -e _DB_URL=$_DB_URL -e _OWM_API_KEY=$_OWM_API_KEY  --network bot-net --with-registry-auth gcr.io/axpress/github.com/gabrielpsilva/intersectbot:latest
+        docker service create --replicas 3 --name le-bot -p 80:8000 -e _DB_URL="$_DB_URL" -e _OWM_API_KEY=$_OWM_API_KEY  --network bot-net --with-registry-auth gcr.io/axpress/github.com/gabrielpsilva/intersectbot:latest
         docker service ps le-bot
 
         "
