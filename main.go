@@ -22,12 +22,12 @@ func main(){
 func serverConfig() *gin.Engine{
 
 	// initialize database
-	connectionUrl := os.Getenv("DB_URL")
+	connectionUrl := os.Getenv("_DB_URL")
 	appDB.Connect(connectionUrl)
 	appDB.MySQL.Init()
 
 	// initialize weather api
-	weather.OWM_API_KEY = os.Getenv("OWM_API_KEY")
+	weather.OWM_API_KEY = os.Getenv("_OWM_API_KEY")
 
 	// initialize web server
 	router := gin.New()
