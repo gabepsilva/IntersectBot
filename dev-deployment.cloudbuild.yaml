@@ -5,11 +5,7 @@ steps:
     args:
       - '-c'
       - |
-        gcloud compute ssh master1 \
-        --zone=us-central1-a \
-        -- "
-        set -e
-
+        set -ex
         docker-credential-gcr configure-docker
         docker pull gcr.io/axpress/github.com/gabrielpsilva/intersectbot
         docker service rm le-bot
