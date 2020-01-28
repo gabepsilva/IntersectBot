@@ -11,6 +11,16 @@ import (
 
 func main(){
 
+	router := serverConfig()
+	err := router.Run("0.0.0.0:8000")
+	if err != nil {
+		log.Panicf("%v", err)
+	}
+
+}
+
+func serverConfig() *gin.Engine{
+
 	// initialize database
 	connectionUrl := os.Getenv("DB_URL")
 	appDB.Connect(connectionUrl)
@@ -28,10 +38,7 @@ func main(){
 		v1.POST("/weather-status", getWeatherStatus)
 	}
 
-	err := router.Run("0.0.0.0:8000")
-	if err != nil {
-		log.Panicf("%v", err)
-	}
+	return router
 
 }
 
