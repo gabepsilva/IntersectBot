@@ -5,6 +5,7 @@ steps:
     args:
       - '-c'
       - |
+        echo " ############################ " 
         gcloud compute ssh master1 \
         --zone=us-central1-a \
         -- "
