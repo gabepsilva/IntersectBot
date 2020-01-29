@@ -9,6 +9,7 @@ steps:
         --zone=us-central1-a \
         -- "
         set -ex
+        docker pull gcr.io/axpress/github.com/gabrielpsilva/intersectbot
         docker service update --image gcr.io/axpress/github.com/gabrielpsilva/intersectbot le-bot
         docker service ps le-bot
         
