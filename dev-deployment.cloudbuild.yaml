@@ -5,8 +5,11 @@ steps:
     args:
       - '-c'
       - |
+        gcloud compute ssh master1 \
+        --zone=us-central1-a \
+        -- "
         set -ex
         docker service update --image gcr.io/axpress/github.com/gabrielpsilva/intersectbot le-bot
         docker service ps le-bot
-
         "
+        
