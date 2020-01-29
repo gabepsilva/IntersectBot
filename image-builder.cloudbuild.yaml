@@ -32,8 +32,8 @@ steps:
       - '-c'
       - |
         cd IntersectBot
-        export $_OWM_API_KEY
-        export $_DB_URL
+        export _OWM_API_KEY=$_OWM_API_KEY
+        export _DB_URL=$_DB_URL
         go test
 
 
