@@ -5,7 +5,7 @@ steps:
     args:
       - '-c'
       - |
-        gcloud compute ssh master1 \
+        gcloud compute ssh master1-2  \
         --zone=us-central1-a \
         -- "
         set -ex
