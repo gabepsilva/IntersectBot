@@ -23,6 +23,19 @@ steps:
           #git checkout gitactions
         fi
 
+  # Run unit test
+  - name: 'gcr.io/cloud-builders/go:debian'
+    env:
+      - GOPATH=/workspace/gopath
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        cd IntersectBot
+        export $_OWM_API_KEY
+        export $_DB_URL
+        go test
+
 
   # Building
   - name: 'gcr.io/cloud-builders/go:debian'

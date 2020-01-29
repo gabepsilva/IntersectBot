@@ -93,5 +93,5 @@ func getWeatherStatus(c *gin.Context) {
 		botReturn += fmt.Sprintf("%s - %d/%d records (%d%%)\n", weatherStatus, weatherCount, totalRows, (weatherCount * 100 / totalRows))
 	}
 
-	c.String(200, botReturn)
+	c.String(200, botReturn + "v1.0.0")
 }
